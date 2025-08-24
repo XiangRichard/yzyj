@@ -726,7 +726,7 @@
         
         .camera-preview {
             width: 100%;
-            height: 400px;
+            height: 436px;
             background: #333;
             display: flex;
             align-items: center;
@@ -1328,6 +1328,12 @@
                         
                         cameraPreview.innerHTML = '';
                         cameraPreview.appendChild(video);
+
+                        // 确保视频居中显示
+                        video.style.position = 'absolute';
+                        video.style.left = '50%';
+                        video.style.top = '50%';
+                        video.style.transform = 'translate(-50%, -65%)';
                         
                         // 创建canvas用于拍照
                         canvas = document.createElement('canvas');
