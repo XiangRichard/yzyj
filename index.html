@@ -1293,7 +1293,7 @@
             }
         }
         
-        // 打开相机
+        // 相机访问功能
         function openCamera() {
             cameraModal.classList.add('active');
             
@@ -1312,24 +1312,34 @@
             } else {
                 // 非微信环境使用HTML5相机API
                 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    navigator.mediaDevices.getUserMedia({ video: true })
-                        .then(function(mediaStream) {
-                            stream = mediaStream;
-                            video = document.createElement('video');
-                            video.srcObject = mediaStream;
-                            video.play();
-                            cameraPreview.innerHTML = '';
-                            cameraPreview.appendChild(video);
-                            
-                            // 创建canvas用于拍照
-                            canvas = document.createElement('canvas');
-                            canvas.width = 640;
-                            canvas.height = 480;
-                        })
-                        .catch(function(error) {
-                            console.error('无法访问相机:', error);
-                            cameraPreview.innerHTML = '<p>无法访问相机，请检查权限设置</p>';
+                    navigator.mediaDevices.getUserMedia({ 
+                        audio: true, 
+                        video: { facingMode: 'environment' } 
+                    })
+                    .then(function(mediaStream) {
+                        stream = mediaStream;
+                        video = document.createElement('video');
+                        video.srcObject = mediaStream;
+                        
+                        // 在手机上，视频可能不会自动播放，需要手动触发
+                        video.play().catch(error => {
+                            console.error('无法播放视频:', error);
                         });
+                        
+                        cameraPreview.innerHTML = '';
+                        cameraPreview.appendChild(video);
+                        
+                        // 创建canvas用于拍照
+                        canvas = document.createElement('canvas');
+                        canvas.width = 640;
+                        canvas.height = 480;
+                        cameraPreview.appendChild(canvas);
+                        
+                    })
+                    .catch(function(error) {
+                        console.error('无法访问相机:', error);
+                        cameraPreview.innerHTML = '<p>无法访问相机，请检查权限设置</p>';
+                    });
                 } else {
                     cameraPreview.innerHTML = '<p>您的浏览器不支持相机功能</p>';
                 }
@@ -1625,4 +1635,5 @@
         });
     </script>
 </body>
+
 </html>
