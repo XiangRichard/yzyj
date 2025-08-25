@@ -1341,10 +1341,6 @@
                         canvas.height = 480;
                         cameraPreview.appendChild(canvas);
                         
-                        // 停止自动播放（避免iOS直播界面）
-                        mediaStream.getTracks().forEach(track => track.stop());
-                        video.srcObject = null;
-                        
                     })
                     .catch(function(error) {
                         console.error('无法访问相机:', error);
@@ -1647,6 +1643,7 @@
 </body>
 
 </html>
+
 
 
 
