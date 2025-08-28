@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
-    <!-- 高德地图API -->
-    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=a538f819626bb34dcc827735d0600a21"></script>
     <style>
         * {
             margin: 0;
@@ -441,8 +439,7 @@
         .notification.error {
             background: linear-gradient(45deg, #e74c3c, #c0392b);
             color: white;
-            font-family: 'STXingkai', '华文行楷', 'Microsoft YaHei', sans-serif;
-            font-size: 18px;
+            font-size: 16px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
         
@@ -592,15 +589,15 @@
             align-items: center;
             justify-content: center;
         }
-        
-        /* 打卡成功弹窗 */
-        .checkin-modal {
+    
+        /* 定位获取提示 */
+        .location-permission {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -610,83 +607,63 @@
             transition: all 0.3s ease;
         }
         
-        .checkin-modal.active {
+        .location-permission.active {
             opacity: 1;
             visibility: visible;
         }
         
-        .checkin-content {
-            position: relative;
-            width: 90%;
-            max-width: 500px;
+        .location-content {
             background: white;
-            border-radius: 20px;
-            overflow: hidden;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
             transform: scale(0.8);
             transition: transform 0.3s ease;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
         }
         
-        .checkin-modal.active .checkin-content {
+        .location-permission.active .location-content {
             transform: scale(1);
         }
         
-        .checkin-frame {
-            padding: 30px;
-            position: relative;
-            text-align: center;
+        .location-icon {
+            font-size: 50px;
+            color: #3498db;
+            margin-bottom: 15px;
         }
         
-        .checkin-image {
-            width: 100%;
-            max-height: 300px;
-            object-fit: contain;
-            border-radius: 10px;
+        .location-text {
             margin-bottom: 20px;
-            border: 5px solid #f0f0f0;
+            line-height: 1.6;
         }
         
-        .checkin-watermark {
-            position: absolute;
-            bottom: 60px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: rgba(255, 255, 255, 0.8);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            background: linear-gradient(45deg, #f33b3b, #f33b3b);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            padding: 10px;
-        }
-        
-        .close-checkin {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: #333;
-            font-size: 24px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
+        .location-buttons {
             display: flex;
-            align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            transition: background 0.3s;
-            background: rgba(255,255,255,0.8);
+            gap: 15px;
         }
         
-        .close-checkin:hover {
-            background: rgba(255,255,255,1);
+        .location-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        /* 相机访问样式 */
+        .location-confirm {
+            background: #3498db;
+            color: white;
+        }
+        
+        .location-cancel {
+            background: #e0e0e0;
+            color: #555;
+        }
+        
+        /* 相机访问弹窗 */
         .camera-modal {
             position: fixed;
             top: 0;
@@ -726,7 +703,7 @@
         
         .camera-preview {
             width: 100%;
-            height: 540px;
+            height: 400px;
             background: #333;
             display: flex;
             align-items: center;
@@ -777,6 +754,133 @@
         
         .close-camera:hover {
             background: rgba(0,0,0,0.7);
+        }
+        
+        /* 打卡成功弹窗 */
+        .checkin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .checkin-modal.active {
+            opacity: 1;
+            visibility: visible;
+            background: rgba(0, 0, 0, 0.95);
+        }
+        
+        .checkin-content {
+            position: relative;
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .checkin-modal.active .checkin-content {
+            transform: scale(1);
+        }
+        
+        .checkin-frame {
+            padding: 30px;
+            position: relative;
+            text-align: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .checkin-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 5px solid #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .checkin-watermark {
+            position: absolute;
+            bottom: 90px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 2px 2px 8px rgba(99, 99, 99, 0.7);
+            background: linear-gradient(45deg, #ff0000, #ff0000);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            padding: 10px;
+        }
+        
+        .checkin-point-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .checkin-success-text {
+            font-size: 18px;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .close-checkin {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .close-checkin:hover {
+            background: rgba(255,255,255,1);
+            transform: scale(1.1);
+        }
+        
+        /* 加载动画 */
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         /* 动画 */
@@ -833,12 +937,6 @@
                 grid-template-columns: 1fr;
             }
             
-            .zoom-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 20px;
-            }
-            
             .section-title {
                 font-size: 20px;
             }
@@ -846,13 +944,20 @@
             h1 {
                 font-size: 24px;
             }
+            
+            .location-buttons {
+                flex-direction: column;
+            }
+            
+            .camera-preview {
+                height: 300px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <!-- 循环播放Logo -->
             <div class="logo-container">
                 <div class="logo-slider">
                     <div class="logo-slide active">
@@ -904,6 +1009,8 @@
                 </div>
             </div>
         </div>
+
+        </div>
         
         <div class="section">
             <div class="section-title">
@@ -916,13 +1023,12 @@
                 <i class="fas fa-search-plus"></i> 点击地图可放大查看
             </p>
         </div>
-        
+
         <div class="section">
             <div class="section-title">
                 <i class="fas fa-map-pin"></i> 途经景点
             </div>
             <div class="points-list">
-                <!-- 按顺序编号：太平门为1，枇杷山书院为7 -->
                 <div class="point-card" data-point="7">
                     <h3><span class="point-number">1</span> <i class="fas fa-archway"></i> 太平门</h3>
                     <p>古重庆九开八闭城门之首，长江边的重要门户</p>
@@ -987,7 +1093,7 @@
                 </div>
                 
                 <p class="modal-text" id="modalDesc">
-                    太平门坐落于重庆城东南部，因其地处古城下半城的中心区域，城内设有重庆府署和巴县官府衙门，成为全城的政治中枢。自宋至明清，太平门始终是重庆城临江而立的重要屏障。1891年重庆开埠成为通商口岸后，外商与洋行纷纷聚集于城门内的白象街一带，太平门附近遂发展成为金融中心。2014年至2015年，对内城门区域开展考古发掘，发现太平门遗迹为夯土包石券顶结构，初建于明洪武元年（1368年），清代曾加以修缮。主城门为明代所建单门洞石构拱门，采用一券一伏式双重券顶结构，内外以石阶踏道和墁石路面相连；瓮城平面呈长方形，由东、南、西三面城墙与主城墙合围而成。瓮城门及西墙已毁，东墙与南墙虽被房屋道路叠压，仍部分存留，为重庆城中仅存较为完整的瓮城遗迹。
+                    太平门坐落于重庆城东南部，因其地处古城下半城的中心区域，城内设有重庆府署和巴县官府衙门，成为全城的政治中枢。自宋至明清，太平门始终是重庆城临江而立的重要屏障。1891年重庆开埠成为通商口岸后，外商与洋行纷纷聚集于城门内的白象街一带，太平门附近遂发展成为金融中心。
                 </p>
                 <div class="modal-buttons">
                     <button class="modal-btn nav-btn" id="navBtn">
@@ -1024,11 +1130,28 @@
         </div>
     </div>
     
+    
+    <!-- 定位权限请求弹窗 -->
+    <div class="location-permission" id="locationPermission">
+        <div class="location-content">
+            <div class="location-icon">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <h3>需要位置权限</h3>
+            <p class="location-text">打卡功能需要获取您的位置信息，用于验证您是否在景点附近。我们不会存储您的位置数据。</p>
+            <div class="location-buttons">
+                <button class="location-btn location-confirm" id="locationConfirm">允许</button>
+                <button class="location-btn location-cancel" id="locationCancel">拒绝</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- 相机访问弹窗 -->
     <div class="camera-modal" id="cameraModal">
         <div class="camera-content">
             <div class="camera-preview" id="cameraPreview">
-                <p>相机访问中...</p>
+                <div class="loading-spinner"></div>
+                <p>准备相机中...</p>
             </div>
             <div class="camera-controls">
                 <button class="camera-btn" id="captureBtn">
@@ -1044,8 +1167,9 @@
         <div class="checkin-content">
             <div class="checkin-frame">
                 <img id="checkinPhoto" class="checkin-image" src="" alt="打卡照片">
-                <div class="checkin-watermark">打卡成功</div>
-                <p>您已成功打卡<span id="checkinPointName">太平门</span></p>
+                <div class="checkin-watermark">到达！</div>
+                <div class="checkin-point-name" id="checkinPointName">太平门</div>
+                <p class="checkin-success-text">成功打卡！</p>
             </div>
             <button class="close-checkin" id="closeCheckin">&times;</button>
         </div>
@@ -1057,12 +1181,12 @@
     </div>
     
     <script>
-        // 按顺序排列的景点数据：太平门为1，枇杷山书院为7
+        // 景点数据
         const pointsData = [
             {
                 id: 7,
                 name: "太平门",
-                description: "太平门坐落于重庆城东南部，因其地处古城下半城的中心区域，城内设有重庆府署和巴县官府衙门，成为全城的政治中枢。自宋至明清，太平门始终是重庆城临江而立的重要屏障。1891年重庆开埠成为通商口岸后，外商与洋行纷纷聚集于城门内的白象街一带，太平门附近遂发展成为金融中心。2014年至2015年，对内城门区域开展考古发掘，发现太平门遗迹为夯土包石券顶结构，初建于明洪武元年（1368年），清代曾加以修缮。主城门为明代所建单门洞石构拱门，采用一券一伏式双重券顶结构，内外以石阶踏道和墁石路面相连；瓮城平面呈长方形，由东、南、西三面城墙与主城墙合围而成。瓮城门及西墙已毁，东墙与南墙虽被房屋道路叠压，仍部分存留，为重庆城中仅存较为完整的瓮城遗迹。",
+                description: "太平门坐落于重庆城东南部，因其地处古城下半城的中心区域，城内设有重庆府署和巴县官府衙门，成为全城的政治中枢。自宋至明清，太平门始终是重庆城临江而立的重要屏障。1891年重庆开埠成为通商口岸后，外商与洋行纷纷聚集于城门内的白象街一带，太平门附近遂发展成为金融中心。",
                 position: {lat: 29.552701, lng: 106.58273},
                 images: [
                     "https://i.postimg.cc/ZqHK7Gqh/1.png",
@@ -1089,7 +1213,7 @@
             {
                 id: 5,
                 name: "十八梯",
-                description: "十八梯地处渝中半岛的长斜坡地带，是连接重庆上下半城的核心通道。其名称源于清代修筑的上下石梯，共有200余级台阶，其中设有18级平台，故而得名。历经岁月的洗礼，梯道两侧逐渐建起了民居与商铺，原本狭窄的步道，却也因此成了最具烟火气的市井长廊。这条400米长的老街上，建筑群依山就势，层层叠叠，青瓦灰墙与石阶巷道相互映衬，形成了典型的山城坡地民居景观。",
+                description: "十八梯地处渝中半岛的长斜坡地带，是连接重庆上下半城的核心通道。其名称源于清代修筑的上下石梯，共有200余级台阶，其中设有18级平台，故而得名。历经岁月的洗礼，梯道两侧逐渐建起了民居与商铺，原本狭窄的步道，却也因此成了最具烟火气的市井长廊。",
                 position: {lat: 29.551015, lng: 106.573042},
                 images: [
                     "https://i.postimg.cc/Y98GF4FY/image.png",
@@ -1114,7 +1238,7 @@
             {
                 id: 3,
                 name: "领事巷",
-                description: "早期，洋人在中国西南地区遭遇了诸多不友好的对待，因此他们格外重视自身的人身安全。清末时期，英国经过多次实地勘察，最终将领事馆的办公地点选定在通远门附近城内五福宫一带的制高点。其用意不言而喻，一方面是为了保护自身安全，另一方面也便于监管城内的异动情况。随后，法国、美国、德国等国家也纷纷前来设立领事馆。随着商人、外交人员不断涌入，清政府特批五福宫一带为领事巷。",
+                description: "早期，洋人在中国西南地区遭遇了诸多不友好的对待，因此他们格外重视自身的人身安全。清末时期，英国经过多次实地勘察，最终将领事馆的办公地点选定在通远门附近城内五福宫一带的制高点。其用意不言而喻，一方面是为了保护自身安全，另一方面也便于监管城内的异动情况。",
                 position: {lat: 29.552566, lng: 106.565913},
                 images: [
                     "https://i.postimg.cc/15dmb0Pf/76.jpg",
@@ -1127,7 +1251,7 @@
             {
                 id: 2,
                 name: "通远门",
-                description: "通远门雄踞于重庆城的正西方，正门之上，横书着“克壮千秋”四个苍劲有力的大字，瓮城城门上则镌刻着“通远门”三字。在重庆古城的十七座城门中，通远门堪称一座举足轻重的大城门。其一，此处地势险要，位于渝城西南的最高处，是渝城境内的天然制高点；其二，此门是全城唯一一座仅通陆路的关隘。通远门见证了重庆历史上的多次重要战役，是重庆城市防御体系的重要组成部分。",
+                description: "通远门雄踞于重庆城的正西方，正门之上，横书着「克壮千秋」四个苍劲有力的大字，瓮城城门上则镌刻着「通远门」三字。在重庆古城的十七座城门中，通远门堪称一座举足轻重的大城门。其一，此处地势险要，位于渝城西南的最高处，是渝城境内的天然制高点；其二，此门是全城唯一一座仅通陆路的关隘。",
                 position: {lat: 29.555454, lng: 106.567319},
                 images: [
                     "https://i.postimg.cc/hGY3B0M3/image.jpg",
@@ -1140,7 +1264,7 @@
             {
                 id: 1,
                 name: "枇杷山书院",
-                description: "枇杷山书院坐落于枇杷山公园南侧，依托重庆市文物保护单位——中共重庆市委会枇杷山办公大楼旧址进行改建。枇杷山书院在设计上立足“六美”，秉持“在历史中阅读优美文化，在文物里感受优秀传统”的理念，致力于打造重庆市首家历史文化阅读空间以及文化遗产研学交流平台。",
+                description: "枇杷山书院坐落于枇杷山公园南侧，依托重庆市文物保护单位——中共重庆市委会枇杷山办公大楼旧址进行改建。枇杷山书院在设计上立足「六美」，秉持「在历史中阅读优美文化，在文物里感受优秀传统」的理念，致力于打造重庆市首家历史文化阅读空间以及文化遗产研学交流平台。",
                 position: {lat: 29.552617, lng: 106.558529},
                 images: [
                     "https://i.postimg.cc/wjDCFDBK/1.png",
@@ -1170,6 +1294,9 @@
         const imageModal = document.getElementById('imageModal');
         const expandedImage = document.getElementById('expandedImage');
         const closeImageModal = document.getElementById('closeImageModal');
+        const locationPermission = document.getElementById('locationPermission');
+        const locationConfirm = document.getElementById('locationConfirm');
+        const locationCancel = document.getElementById('locationCancel');
         const cameraModal = document.getElementById('cameraModal');
         const cameraPreview = document.getElementById('cameraPreview');
         const captureBtn = document.getElementById('captureBtn');
@@ -1180,15 +1307,15 @@
         const closeCheckin = document.getElementById('closeCheckin');
         
         // 当前选中的景点ID
-        let currentPointId = 7; // 默认太平门
+        let currentPointId = 7;
         let swiper = null;
         let currentScale = 1;
         let isDragging = false;
         let startX, startY;
-        let scrollLeft, scrollTop;
         let stream = null;
         let video = null;
         let canvas = null;
+        let hasLocationPermission = false;
         
         // 初始化Logo轮播
         function initLogoSlider() {
@@ -1219,7 +1346,6 @@
                     prevEl: '.swiper-button-prev',
                 },
             });
-            
             // 为轮播图中的图片添加点击事件
             document.querySelectorAll('.swiper-slide img').forEach(img => {
                 img.addEventListener('click', function() {
@@ -1273,82 +1399,160 @@
             }, 3000);
         }
         
-        // 导航功能 - 使用微信内置地图
+        // 导航功能
         function navigateToPoint() {
             const point = pointsData.find(p => p.id === currentPointId);
             if (point) {
-                // 在微信公众号中使用微信内置地图
-                if (typeof wx !== 'undefined' && wx.openLocation) {
-                    wx.openLocation({
-                        latitude: point.position.lat,
-                        longitude: point.position.lng,
-                        name: point.name,
-                        address: point.description,
-                        scale: 18
-                    });
-                } else {
-                    // 备用方案：使用网页版地图
-                    window.location.href = `https://uri.amap.com/marker?position=${point.position.lng},${point.position.lat}&name=${encodeURIComponent(point.name)}`;
-                }
+                // 使用网页版地图
+                window.location.href = `https://uri.amap.com/marker?position=${point.position.lng},${point.position.lat}&name=${encodeURIComponent(point.name)}`;
             }
         }
         
-        // 相机访问功能
+        // 计算两点间距离（Haversine公式）- 优化版本
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            // 转换为弧度
+            const toRadians = (degree) => degree * Math.PI / 180;
+            
+            const R = 6371000; // 地球半径（米）
+            const φ1 = toRadians(lat1);
+            const φ2 = toRadians(lat2);
+            const Δφ = toRadians(lat2 - lat1);
+            const Δλ = toRadians(lon2 - lon1);
+            
+            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            
+            const distance = R * c; // 距离（米）
+            return distance;
+        }
+        
+        // 获取当前位置
+        function getCurrentPosition() {
+            return new Promise((resolve, reject) => {
+                if (navigator.geolocation) {
+                    // 普通浏览器环境
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            resolve({
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude,
+                                accuracy: position.coords.accuracy
+                            });
+                        },
+                        (error) => {
+                            reject(error);
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    reject(new Error('浏览器不支持定位功能'));
+                }
+            });
+        }
+        
+        // 检查用户是否在景点附近
+        function checkUserNearPoint(pointPosition, userPosition) {
+            const distance = calculateDistance(
+                pointPosition.lat, pointPosition.lng,
+                userPosition.latitude, userPosition.longitude
+            );
+            
+            console.log(`距离${pointsData.find(p => p.id === currentPointId).name}的距离: ${distance.toFixed(2)}米`);
+            console.log(`定位精度: ${userPosition.accuracy}米`);
+            
+            // 考虑定位精度，适当放宽范围限制
+            const adjustedDistance = distance - userPosition.accuracy;
+            return adjustedDistance <= 800; // 800米范围内（考虑定位精度）
+        }
+        
+        // 请求定位权限
+        function requestLocationPermission() {
+            if (navigator.geolocation) {
+                // 普通浏览器环境，测试获取位置
+                navigator.geolocation.getCurrentPosition(
+                    () => {
+                        hasLocationPermission = true;
+                        locationPermission.classList.remove('active');
+                        // 权限获取成功后验证位置
+                        validateLocation();
+                    },
+                    (error) => {
+                        locationPermission.classList.remove('active');
+                        showNotification('需要位置权限才能打卡', false);
+                    }
+                );
+            } else {
+                showNotification('您的浏览器不支持定位功能', false);
+            }
+        }
+        
+        // 验证位置
+        function validateLocation() {
+            getCurrentPosition().then(userPosition => {
+                const point = pointsData.find(p => p.id === currentPointId);
+                const isNearby = checkUserNearPoint(point.position, userPosition);
+                
+                if (isNearby) {
+                    // 在范围内，打开相机
+                    openCamera();
+                } else {
+                    // 不在范围内，显示提示
+                    showNotification(`您距离${point.name}过远，请靠近后再打卡 (${calculateDistance(point.position.lat, point.position.lng, userPosition.latitude, userPosition.longitude).toFixed(0)}米)`, false);
+                }
+            }).catch(error => {
+                console.error('获取位置失败:', error);
+                showNotification('获取位置失败，请检查定位权限', false);
+            });
+        }
+        
+        // 打开相机
         function openCamera() {
             cameraModal.classList.add('active');
             
-            // 在微信公众号中使用微信JS-SDK的拍照功能
-            if (typeof wx !== 'undefined' && wx.chooseImage) {
-                wx.chooseImage({
-                    count: 1,
-                    sizeType: ['original', 'compressed'],
-                    sourceType: ['camera'],
-                    success: function(res) {
-                        const localIds = res.localIds;
-                        // 这里可以上传图片到服务器或直接使用
-                        simulateCheckInSuccess(localIds[0]);
-                    }
-                });
-            } else {
-                // 非微信环境使用HTML5相机API
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    navigator.mediaDevices.getUserMedia({ 
-                        audio: true, 
-                        video: { facingMode: 'environment' } 
-                    })
-                    .then(function(mediaStream) {
-                        stream = mediaStream;
-                        video = document.createElement('video');
-                        video.srcObject = mediaStream;
-                        
-                        // 在手机上，视频可能不会自动播放，需要手动触发
-                        video.play().catch(error => {
-                            console.error('无法播放视频:', error);
-                        });
-                        
+            // 非微信环境使用HTML5相机API
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                })
+                .then(function(mediaStream) {
+                    stream = mediaStream;
+                    video = document.createElement('video');
+                    video.srcObject = mediaStream;
+                    video.setAttribute('playsinline', true);
+                    
+                    // 播放视频
+                    video.play().then(() => {
                         cameraPreview.innerHTML = '';
                         cameraPreview.appendChild(video);
 
                         // 确保视频居中显示
-                        video.style.position = 'absolute';
-                        video.style.left = '50%';
-                        video.style.top = '50%';
-                        video.style.transform = 'translate(-50%, -65%)';
+                        video.style.width = '100%';
+                        video.style.height = '100%';
+                        video.style.objectFit = 'cover';
                         
                         // 创建canvas用于拍照
                         canvas = document.createElement('canvas');
-                        canvas.width = 640;
-                        canvas.height = 480;
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        canvas.style.display = 'none';
                         cameraPreview.appendChild(canvas);
-                        
-                    })
-                    .catch(function(error) {
-                        console.error('无法访问相机:', error);
-                        cameraPreview.innerHTML = '<p>无法访问相机，请检查权限设置</p>';
+                    }).catch(error => {
+                        console.error('无法播放视频:', error);
+                        cameraPreview.innerHTML = '<p>无法访问相机，请重试</p>';
                     });
-                } else {
-                    cameraPreview.innerHTML = '<p>您的浏览器不支持相机功能</p>';
-                }
+                })
+                .catch(function(error) {
+                    console.error('无法访问相机:', error);
+                    cameraPreview.innerHTML = '<p>无法访问相机，请检查权限设置</p>';
+                });
+            } else {
+                cameraPreview.innerHTML = '<p>您的浏览器不支持相机功能</p>';
             }
         }
         
@@ -1362,14 +1566,8 @@
                 // 关闭相机
                 closeCameraFunc();
                 
-                // 模拟位置验证
-                const isNearby = Math.random() > 0.001; // 99.9%概率在附近
-                
-                if (isNearby) {
-                    simulateCheckInSuccess(photoDataUrl);
-                } else {
-                    showNotification(`您距离${pointsData.find(p => p.id === currentPointId).name}过远，请靠近后再打卡`, false);
-                }
+                // 显示打卡成功
+                simulateCheckInSuccess(photoDataUrl);
             }
         }
         
@@ -1391,7 +1589,7 @@
             localStorage.setItem('chongqing_checkins', JSON.stringify(checkins));
 
             // 显示通知
-            showNotification(`打卡成功！您已到达${point.name}`);
+            showNotification(`打卡成功！/n 您已到达${point.name}`);
         }
         
         // 关闭相机
@@ -1413,7 +1611,7 @@
         function closeCheckinFunc() {
             checkinModal.classList.remove('active');
         }
-        
+
         // 应用地图变换
         function applyMapTransform() {
             expandedMap.style.transform = `scale(${currentScale}) translate(${currentTranslate.x}px, ${currentTranslate.y}px)`;
@@ -1433,7 +1631,7 @@
                 openModal(pointId);
             });
         });
-        
+
         closeModal.addEventListener('click', closeModalFunc);
         closeMapModal.addEventListener('click', () => {
             mapModal.classList.remove('active');
@@ -1464,6 +1662,22 @@
             resetMapTransform();
         });
         
+        closeModal.addEventListener('click', closeModalFunc);
+        
+        closeCamera.addEventListener('click', closeCameraFunc);
+        
+        closeCheckin.addEventListener('click', closeCheckinFunc);
+        
+        captureBtn.addEventListener('click', capturePhoto);
+        
+        // 定位权限弹窗按钮
+        locationConfirm.addEventListener('click', requestLocationPermission);
+        
+        locationCancel.addEventListener('click', () => {
+            locationPermission.classList.remove('active');
+            showNotification('需要位置权限才能打卡', false);
+        });
+        
         // 点击弹窗外部关闭
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
@@ -1482,7 +1696,7 @@
                 closeCheckinFunc();
             }
         });
-        
+
         mapModal.addEventListener('click', (e) => {
             if (e.target === mapModal) {
                 mapModal.classList.remove('active');
@@ -1494,8 +1708,17 @@
         // 导航按钮
         navBtn.addEventListener('click', navigateToPoint);
         
-        // 打卡按钮
-        checkBtn.addEventListener('click', openCamera);
+        // 打卡按钮 - 先验证位置
+        checkBtn.addEventListener('click', () => {
+            // 先检查定位权限
+            if (!hasLocationPermission) {
+                locationPermission.classList.add('active');
+                return;
+            }
+            
+            // 已有权限，直接验证位置
+            validateLocation();
+        });
         
         // 缩放功能
         zoomInBtn.addEventListener('click', () => {
@@ -1573,7 +1796,7 @@
             
             applyMapTransform();
         });
-        
+
         // 按ESC关闭弹窗
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -1594,6 +1817,9 @@
                 }
                 if (checkinModal.classList.contains('active')) {
                     closeCheckinFunc();
+                }
+                if (locationPermission.classList.contains('active')) {
+                    locationPermission.classList.remove('active');
                 }
             }
         });
@@ -1616,35 +1842,7 @@
             
             // 初始化Logo轮播
             initLogoSlider();
-            
-            // 微信公众号JS-SDK初始化
-            if (typeof wx !== 'undefined') {
-                // 这里需要配置微信JS-SDK
-                wx.config({
-                    debug: false,
-                    appId: '', // 公众号AppID
-                    timestamp: 0, // 生成签名的时间戳
-                    nonceStr: '', // 生成签名的随机串
-                    signature: '', // 签名
-                    jsApiList: [
-                        'chooseImage',
-                        'previewImage',
-                        'uploadImage',
-                        'downloadImage',
-                        'getNetworkType',
-                        'getLocation',
-                        'openLocation',
-                        'scanQRCode'
-                    ]
-                });
-            }
         });
     </script>
 </body>
-
 </html>
-
-
-
-
-
